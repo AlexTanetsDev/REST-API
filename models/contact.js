@@ -26,12 +26,20 @@ const contactSchema = new Schema(
 contactSchema.post("save", handleMongooseError);
 const emailPattern =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-const phonePattern = /^(\+38|38)?0\d{9}$/;
+const phonePattern =
+  /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/;
 
 const addSchema = Joi.object({
   name: Joi.string().required(),
   email: Joi.string().pattern(emailPattern).required(),
   phone: Joi.string().pattern(phonePattern).required(),
+  favorite: Joi.boolean(),
+});
+
+const updateContactSchema = Joi.object({
+  name: Joi.string(),
+  email: Joi.string().pattern(emailPattern),
+  phone: Joi.string().pattern(phonePattern),
   favorite: Joi.boolean(),
 });
 
@@ -42,6 +50,7 @@ const updateFavoriteSchema = Joi.object({
 const schemas = {
   addSchema,
   updateFavoriteSchema,
+  updateContactSchema,
 };
 
 const Contact = model("contact", contactSchema);
