@@ -4,17 +4,17 @@ const { HttpError, controllersWrapper } = require("../helpers");
 
 const getAll = async (req, res) => {
   const { _id: owner } = req.user;
-  const { page = 1, limit = 10, favorite = false } = req.query;
+  const { page = 1, limit = 10, favorite } = req.query;
   const skip = (page - 1) * limit;
+  const filter = { owner };
+  if (favorite !== undefined) {
+    filter.favorite = favorite;
+  }
 
-  const result = await Contact.find(
-    { owner, favorite },
-    "-createdAt -updatedAt",
-    {
-      skip,
-      limit,
-    }
-  );
+  const result = await Contact.find(filter, "-createdAt -updatedAt", {
+    skip,
+    limit,
+  });
   res.json(result);
 };
 
