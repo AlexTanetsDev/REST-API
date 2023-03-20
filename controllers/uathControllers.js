@@ -5,8 +5,9 @@ const gravatar = require("gravatar");
 const path = require("path");
 const fs = require("fs/promises");
 const Jimp = require("jimp");
+const { v4: uuid } = require("uuid");
 
-const { HttpError, controllersWrapper } = require("../helpers");
+const { HttpError, controllersWrapper, sendEmail } = require("../helpers");
 
 const { SECRET_KEY } = process.env;
 
@@ -22,18 +23,51 @@ const register = async (req, res) => {
 
   const hashPassword = await bcrypt.hash(password, 10);
   const avatarURL = gravatar.url(email);
+  const verificationToken = uuid();
 
-  const newUser = await User.create({
+  await User.create({
     ...req.body,
     password: hashPassword,
     avatarURL,
+    verificationToken,
   });
 
+  await sendEmail(email, verificationToken);
+
   res.status(201).json({
-    email: newUser.email,
-    password,
-    avatarURL,
+    message: "Verify email send success",
   });
+};
+
+const verification = async (req, res) => {
+  const { verificationToken } = req.params;
+  const user = await User.findOne({ verificationToken });
+  if (!user) {
+    throw HttpError(404, "User not found");
+  }
+
+  await User.findByIdAndUpdate(user._id, {
+    verificationToken: null,
+    verify: true,
+  });
+
+  res.json({ message: "Verification successful" });
+};
+
+const resendVerification = async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw HttpError(404, "User not found");
+  }
+
+  if (user.verify) {
+    throw HttpError(400, "Verification has already been passed");
+  }
+
+  await sendEmail(email, user.verificationToken);
+
+  res.json({ message: "Verify email send success" });
 };
 
 const login = async (req, res) => {
@@ -44,7 +78,13 @@ const login = async (req, res) => {
   }
   const passwordCompare = await bcrypt.compare(password, user.password);
   if (!passwordCompare) {
-    throw HttpError(401, "Email or password is wrong");
+    throw HttpError(401, "Password is wrong");
+  }
+
+  if (!user.verify) {
+    await sendEmail(email, user.verificationToken);
+
+    throw HttpError(401, "Please, verify your email");
   }
 
   const payload = {
@@ -114,4 +154,6 @@ module.exports = {
   logout: controllersWrapper(logout),
   subscription: controllersWrapper(updateSubscription),
   updateAvatar: controllersWrapper(updateAvatar),
+  verification: controllersWrapper(verification),
+  resendVerification: controllersWrapper(resendVerification),
 };

@@ -15,7 +15,17 @@ authRouter.post(
   authCtrl.register
 );
 
-// signin
+// Mail verify
+authRouter.get("/verify/:verificationToken", authCtrl.verification);
+
+// Resend verify mail
+authRouter.post(
+  "/verify",
+  validateBody(schemas.verifySchema),
+  authCtrl.resendVerification
+);
+
+// authRouter// signin
 authRouter.post("/login", validateBody(schemas.authSchema), authCtrl.login);
 
 // get current user

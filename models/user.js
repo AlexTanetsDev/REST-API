@@ -31,6 +31,14 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  verify: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+    required: [true, "Verify token is required"],
+  },
 });
 
 const authSchema = Joi.object({
@@ -43,11 +51,18 @@ const updateSubscrition = Joi.object({
   subscription: Joi.string().valid("starter", "pro", "business").required(),
 });
 
+const verifySchema = Joi.object({
+  email: Joi.string()
+    .required()
+    .messages({ "any.required": `"email" is a required field` }),
+});
+
 userSchema.post("save", handleMongooseError);
 
 const schemas = {
   authSchema,
   updateSubscrition,
+  verifySchema,
 };
 
 const User = model("user", userSchema);

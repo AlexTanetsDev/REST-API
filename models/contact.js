@@ -38,21 +38,37 @@ const contactSchema = new Schema(
 contactSchema.post("save", handleMongooseError);
 
 const addSchema = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string().pattern(emailPattern).required(),
-  phone: Joi.string().pattern(phonePattern).required(),
+  name: Joi.string()
+    .required()
+    .messages({ "any.required": "missing field name" }),
+  email: Joi.string().pattern(emailPattern).required().messages({
+    "string.pattern.base": "It's Not a valid email! Please check your input",
+    "any.required": "missing field email",
+  }),
+  phone: Joi.string().pattern(phonePattern).required().messages({
+    "string.pattern.base":
+      "Phone number must be digits and can contain spaces, dashes, parentheses and can start with +",
+    "any.required": "missing field phone",
+  }),
   favorite: Joi.boolean(),
 });
 
 const updateContactSchema = Joi.object({
   name: Joi.string(),
-  email: Joi.string().pattern(emailPattern),
-  phone: Joi.string().pattern(phonePattern),
+  email: Joi.string().pattern(emailPattern).messages({
+    "string.pattern.base": "It's Not a valid email! Please check your input",
+  }),
+  phone: Joi.string().pattern(phonePattern).messages({
+    "string.pattern.base":
+      "Phone number must be digits and can contain spaces, dashes, parentheses and can start with +",
+  }),
   favorite: Joi.boolean(),
 });
 
 const updateFavoriteSchema = Joi.object({
-  favorite: Joi.boolean().required(),
+  favorite: Joi.boolean()
+    .required()
+    .messages({ "any.required": "missing field favorite" }),
 });
 
 const schemas = {
