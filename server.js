@@ -12,6 +12,6 @@ mongoose
     app.listen(PORT);
   })
   .catch((err) => {
-    console.log(err.message);
+    console.log("error :", err.message);
     process.exit(1);
   });

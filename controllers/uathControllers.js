@@ -98,17 +98,15 @@ const login = async (req, res) => {
     token,
     user: {
       email: user.email,
-      subscription: user.subscription,
     },
   });
 };
 
 const getCurrent = async (req, res) => {
-  const { email, subscription } = req.user;
+  const { email } = req.user;
 
   res.json({
     email,
-    subscription,
   });
 };
 
@@ -117,13 +115,6 @@ const logout = async (req, res) => {
   await User.findByIdAndUpdate(_id, { token: "" });
 
   res.status(204);
-};
-
-const updateSubscription = async (req, res) => {
-  const { _id } = req.user;
-  const result = await User.findByIdAndUpdate(_id, req.body, { new: true });
-
-  res.json(result);
 };
 
 const updateAvatar = async (req, res) => {
@@ -152,7 +143,6 @@ module.exports = {
   login: controllersWrapper(login),
   getCurrent: controllersWrapper(getCurrent),
   logout: controllersWrapper(logout),
-  subscription: controllersWrapper(updateSubscription),
   updateAvatar: controllersWrapper(updateAvatar),
   verification: controllersWrapper(verification),
   resendVerification: controllersWrapper(resendVerification),

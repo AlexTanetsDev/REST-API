@@ -18,11 +18,6 @@ const userSchema = new Schema({
     match: emailPattern,
     unique: true,
   },
-  subscription: {
-    type: String,
-    enum: ["starter", "pro", "business"],
-    default: "starter",
-  },
   token: {
     type: String,
     default: "",
@@ -44,11 +39,6 @@ const userSchema = new Schema({
 const authSchema = Joi.object({
   password: Joi.string().min(6).required(),
   email: Joi.string().pattern(emailPattern).required(),
-  subscription: Joi.string(),
-});
-
-const updateSubscrition = Joi.object({
-  subscription: Joi.string().valid("starter", "pro", "business").required(),
 });
 
 const verifySchema = Joi.object({
@@ -61,7 +51,6 @@ userSchema.post("save", handleMongooseError);
 
 const schemas = {
   authSchema,
-  updateSubscrition,
   verifySchema,
 };
 

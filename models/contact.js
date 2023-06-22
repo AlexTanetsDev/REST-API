@@ -21,6 +21,7 @@ const contactSchema = new Schema(
     phone: {
       type: String,
       match: phonePattern,
+      required: [true, "Set phone for contact"],
     },
     favorite: {
       type: Boolean,
@@ -41,9 +42,9 @@ const addSchema = Joi.object({
   name: Joi.string()
     .required()
     .messages({ "any.required": "missing field name" }),
-  email: Joi.string().pattern(emailPattern).required().messages({
+  email: Joi.string().pattern(emailPattern).messages({
     "string.pattern.base": "It's Not a valid email! Please check your input",
-    "any.required": "missing field email",
+    // "any.required": "missing field email",
   }),
   phone: Joi.string().pattern(phonePattern).required().messages({
     "string.pattern.base":

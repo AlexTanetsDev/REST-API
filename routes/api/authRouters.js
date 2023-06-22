@@ -34,15 +34,6 @@ authRouter.get("/current", authentificate, authCtrl.getCurrent);
 // logout
 authRouter.post("/logout", authentificate, authCtrl.logout);
 
-// update subscription
-
-authRouter.patch(
-  "/",
-  authentificate,
-  validateBody(schemas.updateSubscrition),
-  authCtrl.subscription
-);
-
 // Add user avatar
 authRouter.patch(
   "/avatars",
