@@ -35,7 +35,7 @@ const register = async (req, res) => {
   await sendEmail(email, verificationToken);
 
   res.status(201).json({
-    message: "Verify email send success",
+    message: "",
   });
 };
 

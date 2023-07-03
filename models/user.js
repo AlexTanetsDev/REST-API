@@ -39,6 +39,7 @@ const userSchema = new Schema({
 const authSchema = Joi.object({
   password: Joi.string().min(6).required(),
   email: Joi.string().pattern(emailPattern).required(),
+  name: Joi.string().min(2).required(),
 });
 
 const verifySchema = Joi.object({
